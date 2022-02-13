@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use App\Repository\VehicleRepository;
+use App\Utils\ParametersValidation;
+use App\Entity\Vehicle;
 
 class VehicleController extends AbstractController
 {
@@ -31,19 +33,26 @@ class VehicleController extends AbstractController
     #[Route('/create_vehicle', name: 'create_vehicle', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        $result = ParametersValidation::check(
+            [
+                'type' => ['string'],
+                'msrp' => ['double', 'integer'],
+                'year' => ['integer'],
+                'make' => ['string'],
+                'model' => ['string'],
+                'miles' => ['integer'],
+                'vin' => ['string']
+            ], Vehicle::class, $request
+        );
 
-        if(
-            empty($data['type']) ||
-            empty($data['msrp']) ||
-            empty($data['year']) ||
-            empty($data['make']) ||
-            empty($data['model']) ||
-            empty($data['miles']) ||
-            empty($data['vin'])
-        ){
-            return new JsonResponse(['status' => 'MISSING REQUIRED PARAMETERS!'], Response:: HTTP_CREATED);
+        if($result['status'] == "ERROR"){
+            return new JsonResponse([
+                'status' => 'ERROR',
+                'message' => 'MISSING PARAMETERS!',
+                'errorsLog' => $result['errorsLog']], Response:: HTTP_CREATED);
         }
+
+        $data = $result['data'];
 
         $dateAdded = new \DateTime();
         $type = $data['type'];
@@ -54,7 +63,7 @@ class VehicleController extends AbstractController
         $miles = $data['miles'];
         $vin = $data['vin'];
         $deleted = false;
-        
+
         $this->vehicleRepository->createVehicle(
             $dateAdded,
             $type,
@@ -67,6 +76,6 @@ class VehicleController extends AbstractController
             $deleted
         );
 
-        return new JsonResponse(['status' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
+        return new JsonResponse(['status' => 'OK', 'message' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
     }
 }
