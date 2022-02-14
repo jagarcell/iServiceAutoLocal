@@ -101,6 +101,7 @@ class VehicleController extends AbstractController
                     'vin'
                 ]
             );
+            return new JsonResponse(['status' => 'ok', 'vehicles' => $vehicles], Response::HTTP_OK);
 
         $data = [];
 

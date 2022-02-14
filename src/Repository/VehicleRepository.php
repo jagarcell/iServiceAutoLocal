@@ -76,6 +76,10 @@ class VehicleRepository extends ServiceEntityRepository
 */
     public function filterAndSortVehicles($criteria, $columnNames = [])
     {
+        if(!isset($criteria['filter']) || !isset($criteria['deleted'])){
+            $criteria['filter']['deleted'] = false;
+            return $criteria;
+        }
 
         $connection = $this->getEntityManager()->getConnection();
 
