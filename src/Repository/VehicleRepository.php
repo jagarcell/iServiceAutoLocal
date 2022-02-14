@@ -74,6 +74,13 @@ class VehicleRepository extends ServiceEntityRepository
         return $resultSet->fetchAllAssociative();
     }
 
+    public function updateVehicle($vehicle) : Vehicle
+    {
+        $this->manager->persist($vehicle);
+        $this->manager->flush();
+        return $vehicle;
+    }
+
     // /**
     //  * @return Vehicle[] Returns an array of Vehicle objects
     //  */

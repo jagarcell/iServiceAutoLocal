@@ -139,12 +139,36 @@ class VehicleController extends AbstractController
     public function getVehicleById($id) : JsonResponse
     {
         # code...
-        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id]);
+        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id, 'deleted' => false]);
         if($vehicle === null){
             $vehicle = [];
         }
         else{
             $vehicle = $vehicle->jsonResponse();
+        }
+
+        return new JsonResponse(['status' => 'ok', 'vehicle' => $vehicle], Response::HTTP_OK);
+    }
+
+    #[Route('/vehicle/{id}', name: 'vehicleUpdate', methods: ['PATCH'])]
+    public function updateVehicle($id, Request $request)
+    {
+        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id, 'deleted' => false]);
+        $data = \json_decode($request->getContent(), true);
+        if($vehicle === null){
+            $vehicle = [];
+        }
+        else{
+            empty($data['date_added']) ? : $vehicle->setDateAdded($data['date_added']);
+            empty($data['type']) ? : $vehicle->setType($data['type']);
+            empty($data['msrp']) ? : $vehicle->setMsrp($data['msrp']);
+            empty($data['year']) ? : $vehicle->setYear($data['year']);
+            empty($data['make']) ? : $vehicle->setMake($data['make']);
+            empty($data['model']) ? : $vehicle->setModel($data['model']);
+            empty($data['miles']) ? : $vehicle->setMiles($data['miles']);
+            empty($data['vin']) ? : $vehicle->setVin($data['vin']);
+
+            $vehicle = $this->vehicleRepository->updateVehicle($vehicle)->jsonResponse();
         }
 
         return new JsonResponse(['status' => 'ok', 'vehicle' => $vehicle], Response::HTTP_OK);
