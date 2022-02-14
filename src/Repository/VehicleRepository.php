@@ -51,34 +51,11 @@ class VehicleRepository extends ServiceEntityRepository
         $this->manager->persist($newVehicle);
         $this->manager->flush();
     }
-/*
-    public function filterAndSortVehicles($criteria)
-    {
-        $filter = [];
-        $sort = [];
-        foreach ($criteria['filter'] as $field => $value) {
-            # code...
-            $filter[$field] = $value;
-        }
-        $filter['deleted'] = false;
-        foreach ($criteria['sort'] as $field => $value) {
-            # code...
-            $sort[$field] = $value;
-        }
- 
-        $vehicles = $this->findBy(
-            $filter,
-            $sort
-        );
 
-        return $vehicles;
-    }
-*/
     public function filterAndSortVehicles($criteria, $columnNames = [])
     {
         if(!isset($criteria['filter']) || !isset($criteria['deleted'])){
             $criteria['filter']['deleted'] = false;
-            return $criteria;
         }
 
         $connection = $this->getEntityManager()->getConnection();

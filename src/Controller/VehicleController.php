@@ -23,7 +23,7 @@ class VehicleController extends AbstractController
         $this->vehicleRepository = $vehicleRepository;
     }
 
-    #[Route('/vehicle', name: 'vehicle')]
+    #[Route('/vehicles', name: 'vehicles')]
     public function index(): Response
     {
         return $this->json([
@@ -32,7 +32,7 @@ class VehicleController extends AbstractController
         ]);
     }
 
-    #[Route('/create_vehicle', name: 'create_vehicle', methods: ['POST'])]
+    #[Route('/create_vehicle', name: 'createVehicle', methods: ['POST'])]
     public function create(Request $request) : JsonResponse
     {
         $result = ParametersValidation::check(
@@ -80,9 +80,8 @@ class VehicleController extends AbstractController
 
         return new JsonResponse(['status' => 'OK', 'message' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
     }
-
     
-    #[Route('/vehicle_filtered_sorted', name: 'vehicle_filtered_sorted', methods: ['GET'])]
+    #[Route('/vehicle_filtered_sorted', name: 'vehicleFilteredSorted', methods: ['GET'])]
     public function vehiclesFilteredAndSorted(Request $request) : JsonResponse
     {
         $filtersAndSorts = \json_decode($request->getContent(), true);
@@ -101,7 +100,6 @@ class VehicleController extends AbstractController
                     'vin'
                 ]
             );
-            return new JsonResponse(['status' => 'ok', 'vehicles' => $vehicles], Response::HTTP_OK);
 
         $data = [];
 
@@ -135,6 +133,21 @@ class VehicleController extends AbstractController
             }
             return new JsonResponse(['status' => 'ok', 'vehicles' => $data], Response::HTTP_OK);
         }
+    }
+
+    #[Route('/vehicle/{id}', name: 'getVehicleById', methods: ['GET'])]
+    public function getVehicleById($id) : JsonResponse
+    {
+        # code...
+        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id]);
+        if($vehicle === null){
+            $vehicle = [];
+        }
+        else{
+            $vehicle = $vehicle->jsonResponse();
+        }
+
+        return new JsonResponse(['status' => 'ok', 'vehicle' => $vehicle], Response::HTTP_OK);
     }
 
     public function getVehicleData($vehicle)
