@@ -48,7 +48,7 @@ class VehicleController extends AbstractController
         if($result['status'] == "ERROR"){
             return new JsonResponse([
                 'status' => 'ERROR',
-                'message' => 'MISSING PARAMETERS!',
+                'message' => 'MISSING AND/OR WRONG TYPE PARAMETERS!',
                 'errorsLog' => $result['errorsLog']], Response:: HTTP_CREATED);
         }
 
@@ -77,5 +77,33 @@ class VehicleController extends AbstractController
         );
 
         return new JsonResponse(['status' => 'OK', 'message' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
+    }
+
+    
+    #[Route('/vehicle_filtered_sorted', name: 'vehicle_filtered_sorted', methods: ['GET'])]
+    public function vehiclesFilteredAndSorted(Request $request) : JsonResponse
+    {
+        
+        $filtersAndSorts = \json_decode($request->getContent(), true);
+
+        $vehicles = $this->vehicleRepository->filterAndSortVehicles($filtersAndSorts);
+
+        $data = [];
+
+        foreach ($vehicles as $key => $vehicle) {
+            # code...
+            $data[] = [
+                'id' => $vehicle->getId(),
+                'dateAdded' => $vehicle->getDateAdded(),
+                'type' => $vehicle->getType(),
+                'msrp' => $vehicle->getMsrp(),
+                'year' => $vehicle->getYear(),
+                'make' => $vehicle->getMake(),
+                'model' => $vehicle->getModel(),
+                'miles' => $vehicle->getMiles(),
+                'vin' => $vehicle->getVin()
+            ];
+        }
+        return new JsonResponse(['status' => 'ok', 'vehicles' => $data], Response::HTTP_OK);
     }
 }

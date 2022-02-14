@@ -49,6 +49,27 @@ class VehicleRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+    public function filterAndSortVehicles($criteria)
+    {
+        $filter = [];
+        $sort = [];
+        foreach ($criteria['filter'] as $field => $value) {
+            # code...
+            $filter[$field] = $value;
+        }
+        foreach ($criteria['sort'] as $field => $value) {
+            # code...
+            $sort[$field] = $value;
+        }
+ 
+        $vehicles = $this->findBy(
+            $filter,
+            $sort
+        );
+
+        return $vehicles;
+    }
+
     // /**
     //  * @return Vehicle[] Returns an array of Vehicle objects
     //  */
