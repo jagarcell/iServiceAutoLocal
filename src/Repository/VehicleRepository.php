@@ -3,9 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
+use App\Utils\SqlQueryBuilder;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+
 
 /**
  * @method Vehicle|null find($id, $lockMode = null, $lockVersion = null)
@@ -48,7 +51,7 @@ class VehicleRepository extends ServiceEntityRepository
         $this->manager->persist($newVehicle);
         $this->manager->flush();
     }
-
+/*
     public function filterAndSortVehicles($criteria)
     {
         $filter = [];
@@ -57,6 +60,7 @@ class VehicleRepository extends ServiceEntityRepository
             # code...
             $filter[$field] = $value;
         }
+        $filter['deleted'] = false;
         foreach ($criteria['sort'] as $field => $value) {
             # code...
             $sort[$field] = $value;
@@ -68,6 +72,25 @@ class VehicleRepository extends ServiceEntityRepository
         );
 
         return $vehicles;
+    }
+*/
+    public function filterAndSortVehicles($criteria, $columnNames = [])
+    {
+
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * FROM vehicle v';
+
+        $sql .= SqlQueryBuilder::filterSql($criteria);
+        $sql .= SqlQueryBuilder::searchSql($criteria, $columnNames);
+        $sql .= SqlQueryBuilder::sortSql($criteria);
+
+        $statement = $connection->prepare($sql);
+        $resultSet = $statement->executeQuery();
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
     }
 
     // /**

@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Repository\VehicleRepository;
 use App\Utils\ParametersValidation;
 use App\Entity\Vehicle;
+use App\Utils\SqlQueryBuilder;
+use App\Utils\Paginate;
 
 class VehicleController extends AbstractController
 {
@@ -83,27 +85,69 @@ class VehicleController extends AbstractController
     #[Route('/vehicle_filtered_sorted', name: 'vehicle_filtered_sorted', methods: ['GET'])]
     public function vehiclesFilteredAndSorted(Request $request) : JsonResponse
     {
-        
         $filtersAndSorts = \json_decode($request->getContent(), true);
-
-        $vehicles = $this->vehicleRepository->filterAndSortVehicles($filtersAndSorts);
+        
+        $vehicles = 
+            $this->vehicleRepository
+            ->filterAndSortVehicles(
+                $filtersAndSorts,
+                [
+                    'type',
+                    'msrp',
+                    'year',
+                    'make',
+                    'model',
+                    'miles',
+                    'vin'
+                ]
+            );
 
         $data = [];
 
-        foreach ($vehicles as $key => $vehicle) {
-            # code...
-            $data[] = [
-                'id' => $vehicle->getId(),
-                'dateAdded' => $vehicle->getDateAdded(),
-                'type' => $vehicle->getType(),
-                'msrp' => $vehicle->getMsrp(),
-                'year' => $vehicle->getYear(),
-                'make' => $vehicle->getMake(),
-                'model' => $vehicle->getModel(),
-                'miles' => $vehicle->getMiles(),
-                'vin' => $vehicle->getVin()
-            ];
+        // CHECK IF PAGINATION IS REQUIRED
+        if(isset($filtersAndSorts['itemsPerPage']) && isset($filtersAndSorts['page'])){
+            // AS PAGINATION IS REQUIRED LET'S DO IT
+            $itemsPerPage = $filtersAndSorts['itemsPerPage'];
+            $page = $filtersAndSorts['page'];
+
+            $paginate = new Paginate($itemsPerPage, $vehicles, $this);
+
+            $result = $paginate->fetchPage($page, "getVehicleData");
+
+            return new JsonResponse(
+                [
+                    'status' => 'ok', 
+                    'vehicles' => $result['data'], 
+                    'itemsPerPage' => $result['itemsPerPage'], 
+                    'itemsInPage' => $result['itemsInPage'],
+                    'prevPage' => $result['prevPage'],
+                    'page' => $result['page'],
+                    'nextPage' => $result['nextPage'],
+                    'total pages' => $result['totalPages']
+                ], Response::HTTP_OK);
         }
-        return new JsonResponse(['status' => 'ok', 'vehicles' => $data], Response::HTTP_OK);
+        else{
+            // NO PAGINATION REQUIRED
+            foreach ($vehicles as $key => $vehicle) {
+                # code...
+                $data[] = $this->getVehicleData($vehicle);
+            }
+            return new JsonResponse(['status' => 'ok', 'vehicles' => $data], Response::HTTP_OK);
+        }
+    }
+
+    public function getVehicleData($vehicle)
+    {
+        return [
+            'id' => $vehicle['id'],
+            'dateAdded' => $vehicle['date_added'],
+            'type' => $vehicle['type'],
+            'msrp' => $vehicle['msrp'],
+            'year' => $vehicle['year'],
+            'make' => $vehicle['make'],
+            'model' => $vehicle['model'],
+            'miles' => $vehicle['miles'],
+            'vin' => $vehicle['vin']
+        ];
     }
 }
