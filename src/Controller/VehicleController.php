@@ -174,6 +174,21 @@ class VehicleController extends AbstractController
         return new JsonResponse(['status' => 'ok', 'vehicle' => $vehicle], Response::HTTP_OK);
     }
 
+    #[Route('/vehicle/{id}', name: 'deleteVehicle', methods: ['DELETE'])]
+    public function deleteVehicle($id) : JsonResponse
+    {
+        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id, 'deleted' => false]);
+        if($vehicle === null){
+            $vehicle = [];
+        }
+        else{
+            $vehicle->setDeleted(true);
+            $vehicle = $this->vehicleRepository->deleteVehicle($vehicle)->jsonResponse();
+        }
+
+        return new JsonResponse(['status' => 'OK', 'vehicle' => $vehicle], Response::HTTP_OK);
+    }
+
     public function getVehicleData($vehicle)
     {
         return [

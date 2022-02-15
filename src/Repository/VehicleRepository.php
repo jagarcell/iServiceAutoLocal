@@ -81,6 +81,14 @@ class VehicleRepository extends ServiceEntityRepository
         return $vehicle;
     }
 
+    public function deleteVehicle($vehicle)
+    {
+        $this->manager->persist($vehicle);
+        $this->manager->flush();
+
+        return $vehicle;
+    }
+
     // /**
     //  * @return Vehicle[] Returns an array of Vehicle objects
     //  */
