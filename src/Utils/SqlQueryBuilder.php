@@ -4,8 +4,30 @@ namespace App\Utils;
 
 class SqlQueryBuilder {
 
+    private $table;
+    private $filtersAndSorts;
+    private $columnNames;
+
+    public function __construct($table, $filtersAndSorts, $columnNames)
+    {
+        $this->table = $table;
+        $this->filtersAndSorts = $filtersAndSorts;
+        $this->columnNames = $columnNames;
+    }
+
+    public function buildSelectString()
+    {
+        $sql = '
+            SELECT * FROM ' . $this->table . ' t';
+        $sql .= $this->filterSql($this->filtersAndSorts);
+        $sql .= $this->searchSql($this->filtersAndSorts, $this->columnNames);
+        $sql .= $this->sortSql($this->filtersAndSorts);
+        
+        return $sql;
+    }
+
     /**
-     * @method ($criteria {
+     * @method ($filtersAndSorts {
      *                      filter:{
      *                          columnName:value, // for an exact match
      *                          columnName: {
@@ -20,16 +42,16 @@ class SqlQueryBuilder {
      * 
      * @return (The sql string to be appended to the sql root string)
      */
-    public function filterSql($criteria)
+    public function filterSql($filtersAndSorts)
     {
         $filterSqlStr = "";
-        if(isset($criteria['filter']) && count($criteria['filter']) > 0){
-            $filters = $criteria['filter'];
+        if(isset($filtersAndSorts['filter']) && count($filtersAndSorts['filter']) > 0){
+            $filters = $filtersAndSorts['filter'];
             $filterSqlStr .= " WHERE ";
             $columnsAnd = "";
             foreach ($filters as $columnName => $filter) {
                 $filterSqlStr .= $columnsAnd;
-                $columnName = "v." . $columnName; 
+                $columnName = "t." . $columnName; 
                 $rangeAnd = "";
                 if(isset($filter['min']) && isset($filter['max'])){
                     $rangeAnd = " AND ";
@@ -50,7 +72,7 @@ class SqlQueryBuilder {
     }
 
     /**
-     * @method ($criteria {
+     * @method ($filtersAndSorts {
      *                      filter:{
      *                          columnName:value, // for an exact match
      *                          columnName: {
@@ -66,16 +88,16 @@ class SqlQueryBuilder {
      * @return (The sql string to be appended to the sql root string)
      */
 
-    public function sortSql($criteria)
+    public function sortSql($filtersAndSorts)
     {
         $sortSqlStr = "";
-        if(isset($criteria['sort']) && count($criteria['sort']) > 0){
-            $sorts = $criteria['sort'];
+        if(isset($filtersAndSorts['sort']) && count($filtersAndSorts['sort']) > 0){
+            $sorts = $filtersAndSorts['sort'];
             $sortSqlStr = " ORDER BY ";
             $columnsComma = "";
             foreach ($sorts as $columnName => $direction) {
                 $sortSqlStr .= $columnsComma;
-                $columnName = "v." . $columnName;
+                $columnName = "t." . $columnName;
                 $sortSqlStr .= $columnName . " " . $direction;
                 $columnsComma = ", ";
             }
@@ -83,14 +105,14 @@ class SqlQueryBuilder {
         return $sortSqlStr;
     }
 
-    public function searchSql($criteria, $columnNames)
+    public function searchSql($filtersAndSorts, $columnNames)
     {
         $searchSql = "";
         $columnsOr = "";
-        if(isset($criteria['searchText']) && count($columnNames) > 0){
+        if(isset($filtersAndSorts['searchText']) && count($columnNames) > 0){
             $searchSql = " AND (";
 
-            $searchText = $criteria['searchText'];
+            $searchText = $filtersAndSorts['searchText'];
             $keywords = \explode(" ", $searchText);
             foreach ($columnNames as $key => $columnName) {
                 foreach ($keywords as $key => $keyword) {
@@ -98,7 +120,7 @@ class SqlQueryBuilder {
                     if(empty($keyword)){
                         continue;
                     }
-                    $searchSql .= $columnsOr . "v." . $columnName . " like '%" . $keyword . "%'";
+                    $searchSql .= $columnsOr . "t." . $columnName . " like '%" . $keyword . "%'";
                     $columnsOr = " OR ";
                 }
             }
