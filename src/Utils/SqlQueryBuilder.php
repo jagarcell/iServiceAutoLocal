@@ -20,7 +20,7 @@ class SqlQueryBuilder {
      * 
      * @return (The sql string to be appended to the sql root string)
      */
-    static function filterSql($criteria)
+    public function filterSql($criteria)
     {
         $filterSqlStr = "";
         if(isset($criteria['filter']) && count($criteria['filter']) > 0){
@@ -66,7 +66,7 @@ class SqlQueryBuilder {
      * @return (The sql string to be appended to the sql root string)
      */
 
-    static function sortSql($criteria)
+    public function sortSql($criteria)
     {
         $sortSqlStr = "";
         if(isset($criteria['sort']) && count($criteria['sort']) > 0){
@@ -83,11 +83,13 @@ class SqlQueryBuilder {
         return $sortSqlStr;
     }
 
-    static function searchSql($criteria, $columnNames)
+    public function searchSql($criteria, $columnNames)
     {
-        $searchSql = " AND (";
+        $searchSql = "";
         $columnsOr = "";
         if(isset($criteria['searchText']) && count($columnNames) > 0){
+            $searchSql = " AND (";
+
             $searchText = $criteria['searchText'];
             $keywords = \explode(" ", $searchText);
             foreach ($columnNames as $key => $columnName) {

@@ -25,31 +25,10 @@ class VehicleRepository extends ServiceEntityRepository
         $this->manager = $manager;
     }
 
-    public function createVehicle(
-        $dateAdded,
-        $type,
-        $msrp,
-        $year,
-        $make,
-        $model,
-        $miles,
-        $vin,
-        $deleted
-    ){
-        $newVehicle = new Vehicle();
-
-        $newVehicle->setDateAdded($dateAdded);
-        $newVehicle->setType($type);
-        $newVehicle->setMsrp($msrp);
-        $newVehicle->setYear($year);
-        $newVehicle->setMake($make);
-        $newVehicle->setModel($model);
-        $newVehicle->setMiles($miles);
-        $newVehicle->setVin($vin);
-        $newVehicle->setDeleted($deleted);
-
-        $this->manager->persist($newVehicle);
+    public function createVehicle($vehicle){
+        $this->manager->persist($vehicle);
         $this->manager->flush();
+        return $vehicle;
     }
 
     public function filterAndSortVehicles($criteria, $columnNames = [])
@@ -63,9 +42,9 @@ class VehicleRepository extends ServiceEntityRepository
         $sql = '
             SELECT * FROM vehicle v';
 
-        $sql .= SqlQueryBuilder::filterSql($criteria);
-        $sql .= SqlQueryBuilder::searchSql($criteria, $columnNames);
-        $sql .= SqlQueryBuilder::sortSql($criteria);
+        $sql .= (new SqlQueryBuilder())->filterSql($criteria);
+        $sql .= (new SqlQueryBuilder())->searchSql($criteria, $columnNames);
+        $sql .= (new SqlQueryBuilder())->sortSql($criteria);
 
         $statement = $connection->prepare($sql);
         $resultSet = $statement->executeQuery();

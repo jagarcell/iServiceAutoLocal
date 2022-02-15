@@ -5,39 +5,57 @@ namespace App\Entity;
 use App\Repository\VehicleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: VehicleRepository::class)]
 class Vehicle
 {
+    const STRING_MESSAGE = 'The parameter value is invalid or was not provided, should be a character string.';
+    const INTEGER_MESSAGE = 'The parameter value is invalid or was not provided, shoul be an integer number.';
+    const DECIMAL_MESSAGE = 'The parameter value is invalid or was not provided, shoul be a decimal number.';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
     #[ORM\Column(type: 'datetime')]
+    #[Assert\Type('datetime')]
     private $date_added;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\Choice(choices:['used', 'new'], message:'The parameter value is invalid or was not provided, the valid values are "{{ choices }}."')]
     private $type;
 
     #[ORM\Column(type: 'decimal', precision: 22, scale: 2)]
+    #[Assert\Type(type:'double', message:Vehicle::DECIMAL_MESSAGE)]
     private $msrp;
 
     #[ORM\Column(type: 'integer')]
+    #[Assert\Type('int', message:Vehicle::INTEGER_MESSAGE)]
     private $year;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Type('string', message:Vehicle::STRING_MESSAGE)]
     private $make;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Type('string', message:Vehicle::STRING_MESSAGE)]
     private $model;
 
     #[ORM\Column(type: 'integer')]
+    #[Assert\Type('int', message:Vehicle::INTEGER_MESSAGE)]
     private $miles;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Type('string', message:Vehicle::STRING_MESSAGE)]
     private $vin;
 
     #[ORM\Column(type: 'boolean')]
+    #[Assert\Type('boolean')]
     private $deleted;
 
     public function getId(): ?int
@@ -50,7 +68,7 @@ class Vehicle
         return $this->date_added;
     }
 
-    public function setDateAdded(\DateTimeInterface $date_added): self
+    public function setDateAdded($date_added): self
     {
         $this->date_added = $date_added;
 
@@ -62,19 +80,19 @@ class Vehicle
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType( $type): self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getMsrp(): ?string
+    public function getMsrp()
     {
         return $this->msrp;
     }
 
-    public function setMsrp(string $msrp): self
+    public function setMsrp($msrp): self
     {
         $this->msrp = $msrp;
 
@@ -86,7 +104,7 @@ class Vehicle
         return $this->year;
     }
 
-    public function setYear(int $year): self
+    public function setYear($year): self
     {
         $this->year = $year;
 
@@ -98,7 +116,7 @@ class Vehicle
         return $this->make;
     }
 
-    public function setMake(string $make): self
+    public function setMake($make): self
     {
         $this->make = $make;
 
@@ -110,7 +128,7 @@ class Vehicle
         return $this->model;
     }
 
-    public function setModel(string $model): self
+    public function setModel($model): self
     {
         $this->model = $model;
 
@@ -122,7 +140,7 @@ class Vehicle
         return $this->miles;
     }
 
-    public function setMiles(int $miles): self
+    public function setMiles($miles): self
     {
         $this->miles = $miles;
 
@@ -134,7 +152,7 @@ class Vehicle
         return $this->vin;
     }
 
-    public function setVin(string $vin): self
+    public function setVin($vin): self
     {
         $this->vin = $vin;
 
@@ -146,7 +164,7 @@ class Vehicle
         return $this->deleted;
     }
 
-    public function setDeleted(bool $deleted): self
+    public function setDeleted($deleted): self
     {
         $this->deleted = $deleted;
 

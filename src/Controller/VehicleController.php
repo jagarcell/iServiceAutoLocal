@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use App\Repository\VehicleRepository;
 use App\Utils\ParametersValidation;
@@ -33,52 +34,31 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/create_vehicle', name: 'createVehicle', methods: ['POST'])]
-    public function create(Request $request) : JsonResponse
+    public function create(Request $request, ValidatorInterface $validator) : JsonResponse
     {
-        $result = ParametersValidation::check(
-            [
-                'type' => ['string'],
-                'msrp' => ['double', 'integer'],
-                'year' => ['integer'],
-                'make' => ['string'],
-                'model' => ['string'],
-                'miles' => ['integer'],
-                'vin' => ['string']
-            ], Vehicle::class, $request
-        );
+        $data = \json_decode($request->getContent(), true);
+        
+        $vehicle = new Vehicle();
 
-        if($result['status'] == "ERROR"){
-            return new JsonResponse([
-                'status' => 'ERROR',
-                'message' => 'MISSING AND/OR WRONG TYPE PARAMETERS!',
-                'errorsLog' => $result['errorsLog']], Response:: HTTP_CREATED);
+        $vehicle->setDateAdded(new \DateTime());
+        $vehicle->setType(empty($data['type']) ? -1 : $data['type']);
+        $vehicle->setMsrp(empty($data['msrp']) ? "" : $data['msrp']);
+        $vehicle->setYear(empty($data['year']) ? "" : $data['year']);
+        $vehicle->setMake(empty($data['make']) ? -1 : $data['make']);
+        $vehicle->setModel(empty($data['model']) ? -1 : $data['model']);
+        $vehicle->setMiles(empty($data['miles']) ? "" : $data['miles']);
+        $vehicle->setVin(empty($data['vin']) ? -1 : $data['vin']);
+        $vehicle->setDeleted(false);
+
+        $validation = (new ParametersValidation())->validate($vehicle, $validator);
+
+        if($validation['status'] == 'ok'){
+            $this->vehicleRepository->createVehicle($vehicle);
+            return new JsonResponse(['status' => 'ok', 'message' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
         }
-
-        $data = $result['data'];
-
-        $dateAdded = new \DateTime();
-        $type = $data['type'];
-        $msrp = $data['msrp'];
-        $year = $data['year'];
-        $make = $data['make'];
-        $model = $data['model'];
-        $miles = $data['miles'];
-        $vin = $data['vin'];
-        $deleted = false;
-
-        $this->vehicleRepository->createVehicle(
-            $dateAdded,
-            $type,
-            $msrp,
-            $year,
-            $make,
-            $model,
-            $miles,
-            $vin,
-            $deleted
-        );
-
-        return new JsonResponse(['status' => 'OK', 'message' => 'VEHICLE CREATED!'], Response:: HTTP_CREATED);
+        else{
+            return new JsonResponse(['status' => 'error', 'message' => $validation['errorLog']], Response:: HTTP_CREATED);
+        }
     }
     
     #[Route('/vehicle_filtered_sorted', name: 'vehicleFilteredSorted', methods: ['GET'])]
@@ -154,11 +134,12 @@ class VehicleController extends AbstractController
     public function updateVehicle($id, Request $request)
     {
         $vehicle = $this->vehicleRepository->findOneBy(['id' => $id, 'deleted' => false]);
-        $data = \json_decode($request->getContent(), true);
         if($vehicle === null){
             $vehicle = [];
         }
         else{
+            $data = \json_decode($request->getContent(), true);
+
             empty($data['date_added']) ? : $vehicle->setDateAdded($data['date_added']);
             empty($data['type']) ? : $vehicle->setType($data['type']);
             empty($data['msrp']) ? : $vehicle->setMsrp($data['msrp']);
