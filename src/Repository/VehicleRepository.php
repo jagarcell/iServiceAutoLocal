@@ -38,7 +38,7 @@ class VehicleRepository extends ServiceEntityRepository
         if($validation['status'] == 'ok'){
             $this->manager->persist($vehicle);
             $this->manager->flush();
-            return ['status' => 'ok', 'message' => 'VEHICLE CREATED!'];
+            return ['status' => 'ok', 'message' => 'VEHICLE CREATED. I HOPE I CAN BUY ONE FOR ME SOON!'];
         }
         else{
             return ['status' => 'error', 'message' => $validation['errorLog']];
