@@ -105,6 +105,29 @@ class SqlQueryBuilder {
         return $sortSqlStr;
     }
 
+    /**
+     * @method $filtersAndSorts {
+     *                      filter:{
+     *                          columnName:value, // for an exact match
+     *                          columnName: {
+     *                              min:value,
+     *                              max:value
+     *                          }                 // for a range
+     *                       },
+     *                      sort: {
+     *                          columnName:direction (ASC or DESC)
+     *                      }
+     *                    })
+     *          The names of the columns to be included in the search
+     *         $columnNames [
+     *                          'column 1',
+     *                          'column 2',
+     *                          'column n
+     *                      ]
+     * 
+     * @return (The sql string to be appended to the sql root string)
+     */
+
     public function searchSql($filtersAndSorts, $columnNames)
     {
         $searchSql = "";
