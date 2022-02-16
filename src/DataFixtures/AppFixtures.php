@@ -30,7 +30,7 @@ class AppFixtures extends Fixture
         $vin = 109186;
 
         for($i = 0; $i < 50; $i++){
-            $vehicle = new Vehicle();
+            $vehicle = new Vehicle([]);
             $vehicle->setDateAdded(new \DateTime());
             
             $vehicle->setType($type[$typePointer]);
