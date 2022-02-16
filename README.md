@@ -16,7 +16,7 @@ Please refer to the following sites on how to install each one of the techonolog
     2. Download it into your local machine to any folder that you like to and
        once the file has been downloaded, navigate to that folder and extract the file Assessment.rar using the 'extract here' option.
     3. Open a terminal and 'cd' to the extraction's resulting folder, should be 'Assessment'.
-    4. Run 'vagrant up –provision' and wait until the 'Virtual Machine' is created in the VirtualBox and fully booted,the machine name in the VirtualBox is going to be Assessment_JG.
+    4. Run 'vagrant up –provision' and wait until the 'Virtual Machine' is created in the VirtualBox and fully booted,the machine name in the VirtualBox is going to be          Assessment_JG.
     5. When the booting script in the terminal had ended run 'vagrant ssh', now you should be logged into the 'Virtual Machine' via ssh.
     6. In the 'Virtual Machine' 'cd' to 'code':
        vagrant@iserviceautolocal:~$ cd code.
@@ -25,7 +25,7 @@ Please refer to the following sites on how to install each one of the techonolog
        You will get the following message:
        Created database `iserviceauto` for connection named default.
        For the following prompt type 'yes' and hit ENTER:
-        WARNING! You are about to execute a migration in database "iserviceauto" that could result in schema changes and data loss. Are you sure you wish to continue? (yes/no) [yes]:
+        WARNING! You are about to execute a migration in database "iserviceauto" that could result in schema changes and data loss. Are you sure you wish to continue?          (yes/no) [yes]:
         >yes <enter>
        
        [notice] Migrating up to DoctrineMigrations\Version20220212135618
