@@ -3,7 +3,7 @@ On this file you will be able to find the instructions as to how to setup the ap
 
 Minimum Requirements: 
 
-    • Vagrant 2.2.19 (Latest released version)
+    • Vagrant 2.2.19 (Latest released version) 
     • VirtualBox 6.1.32 r149290 (Qt5.6.2)
     
 Please refer to the following sites on how to install each one of the techonologies mentioned above:
