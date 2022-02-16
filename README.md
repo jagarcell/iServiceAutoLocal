@@ -39,7 +39,7 @@ Please refer to the following sites on how to install each one of the techonolog
           > loading App\DataFixtures\AppFixtures
        vagrant@iserviceautolocal:~/code$
 
-You are all set! You can start testing the API at http://127.0.0.1:8000
+You are all set! You can start testing the API sending the requests to http://127.0.0.1:8000
 
 Known (possible) issues:
 In some enviroments, when the Virtual Machine booting script performed by Vagrant finishes, you may notice an slow ssh login and API requests failures. This issue is due to the fact that even when the script has ended the job the machine is still starting services. You can check the progress of the machine by opening the 'Oracle VirtualBox Graphical User Interface' and selecting the Assessment_JG machine, the display emulator shows the machine activity. In any case it should not take more than a few minutes to fully boot up for the first time.    
