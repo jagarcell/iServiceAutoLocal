@@ -47,6 +47,8 @@ class VehicleController extends AbstractController
     public function vehiclesFilteredAndSorted(Request $request) : JsonResponse
     {
         $filtersAndSorts = \json_decode($request->getContent(), true);
+        // This parameter 'app.vehicleType' from the enviroment determine the 
+        // Type of vehicles to show (used or new)
         $filtersAndSorts['filter']['type'] = $this->getParameter('app.vehicleType');
         $result = $this->vehicleRepository->filterAndSortVehicles($filtersAndSorts);
 
@@ -57,7 +59,11 @@ class VehicleController extends AbstractController
     public function getVehicleById($id) : JsonResponse
     {
         # code...
-        $result = $this->vehicleRepository->getVehicleById(['id' => $id, 'type' => $this->getParameter('app.vehicleType'), 'deleted' => false]);
+        // This parameter 'app.vehicleType' from the enviroment determine the 
+        // Type of vehicles to show (used or new)
+        $vehicleType = $this->getParameter('app.vehicleType');
+
+        $result = $this->vehicleRepository->getVehicleById(['id' => $id, 'type' => $vehicleType, 'deleted' => false]);
 
         return new JsonResponse($result, Response::HTTP_OK);
     }
