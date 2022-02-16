@@ -8,8 +8,8 @@ Minimum Requirements:
     
 Please refer to the following sites on how to install each one of the techonologies mentioned above:
 
-    • Vagrant: https://www.vagrantup.com/downloads.html 
-    • VirtualBox: https://www.virtualbox.org/wiki/Downloads 
+    • Vagrant: [Vagrant](https://www.vagrantup.com/downloads.html)
+    • VirtualBox: [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
     1. Navigate in your browser to this repository https://github.com/jagarcell/iServiceAutoLocal.
        And find the file named Assessment.rar in the repostory's root, click on it to open the download page.
