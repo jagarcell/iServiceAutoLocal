@@ -10,6 +10,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Utils\ParametersValidation;
+
+
 
 /**
  * @method Vehicle|null find($id, $lockMode = null, $lockVersion = null)
@@ -31,13 +34,13 @@ class VehicleRepository extends ServiceEntityRepository
         $vehicle = new Vehicle();
 
         $vehicle->setDateAdded(new \DateTime());
-        $vehicle->setType(empty($data['type']) ? -1 : $data['type']);
-        $vehicle->setMsrp(empty($data['msrp']) ? "" : $data['msrp']);
-        $vehicle->setYear(empty($data['year']) ? "" : $data['year']);
-        $vehicle->setMake(empty($data['make']) ? -1 : $data['make']);
-        $vehicle->setModel(empty($data['model']) ? -1 : $data['model']);
-        $vehicle->setMiles(empty($data['miles']) ? "" : $data['miles']);
-        $vehicle->setVin(empty($data['vin']) ? -1 : $data['vin']);
+        $vehicle->setType(!isset($data['type']) ? -1 : $data['type']);
+        $vehicle->setMsrp(!isset($data['msrp']) ? "" : $data['msrp']);
+        $vehicle->setYear(!isset($data['year']) ? "" : $data['year']);
+        $vehicle->setMake(!isset($data['make']) ? -1 : $data['make']);
+        $vehicle->setModel(!isset($data['model']) ? -1 : $data['model']);
+        $vehicle->setMiles(!isset($data['miles']) ? "" : $data['miles']);
+        $vehicle->setVin(!isset($data['vin']) ? -1 : $data['vin']);
         $vehicle->setDeleted(false);
 
         $validation = (new ParametersValidation())->validate($vehicle, $validator);
@@ -124,14 +127,14 @@ class VehicleRepository extends ServiceEntityRepository
         else{
             $data = \json_decode($request->getContent(), true);
 
-            empty($data['date_added']) ? : $vehicle->setDateAdded($data['date_added']);
-            empty($data['type']) ? : $vehicle->setType($data['type']);
-            empty($data['msrp']) ? : $vehicle->setMsrp($data['msrp']);
-            empty($data['year']) ? : $vehicle->setYear($data['year']);
-            empty($data['make']) ? : $vehicle->setMake($data['make']);
-            empty($data['model']) ? : $vehicle->setModel($data['model']);
-            empty($data['miles']) ? : $vehicle->setMiles($data['miles']);
-            empty($data['vin']) ? : $vehicle->setVin($data['vin']);
+            isset($data['date_added']) ? : $vehicle->setDateAdded($data['date_added']);
+            isset($data['type']) ? : $vehicle->setType($data['type']);
+            isset($data['msrp']) ? : $vehicle->setMsrp($data['msrp']);
+            isset($data['year']) ? : $vehicle->setYear($data['year']);
+            isset($data['make']) ? : $vehicle->setMake($data['make']);
+            isset($data['model']) ? : $vehicle->setModel($data['model']);
+            isset($data['miles']) ? : $vehicle->setMiles($data['miles']);
+            isset($data['vin']) ? : $vehicle->setVin($data['vin']);
 
             $this->manager->persist($vehicle);
             $this->manager->flush();
