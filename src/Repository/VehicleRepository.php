@@ -31,17 +31,7 @@ class VehicleRepository extends ServiceEntityRepository
 
     public function createVehicle($data, $validator){
 
-        $vehicle = new Vehicle();
-
-        $vehicle->setDateAdded(new \DateTime());
-        $vehicle->setType(!isset($data['type']) ? -1 : $data['type']);
-        $vehicle->setMsrp(!isset($data['msrp']) ? "" : $data['msrp']);
-        $vehicle->setYear(!isset($data['year']) ? "" : $data['year']);
-        $vehicle->setMake(!isset($data['make']) ? -1 : $data['make']);
-        $vehicle->setModel(!isset($data['model']) ? -1 : $data['model']);
-        $vehicle->setMiles(!isset($data['miles']) ? "" : $data['miles']);
-        $vehicle->setVin(!isset($data['vin']) ? -1 : $data['vin']);
-        $vehicle->setDeleted(false);
+        $vehicle = new Vehicle($data);
 
         $validation = (new ParametersValidation())->validate($vehicle, $validator);
 

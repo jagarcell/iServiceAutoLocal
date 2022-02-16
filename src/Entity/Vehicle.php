@@ -58,6 +58,19 @@ class Vehicle
     #[Assert\Type('boolean')]
     private $deleted;
 
+    public function __construct($data)
+    {
+        $this->setDateAdded(new \DateTime());
+        $this->setType(!isset($data['type']) ? -1 : $data['type']);
+        $this->setMsrp(!isset($data['msrp']) ? "" : $data['msrp']);
+        $this->setYear(!isset($data['year']) ? "" : $data['year']);
+        $this->setMake(!isset($data['make']) ? -1 : $data['make']);
+        $this->setModel(!isset($data['model']) ? -1 : $data['model']);
+        $this->setMiles(!isset($data['miles']) ? "" : $data['miles']);
+        $this->setVin(!isset($data['vin']) ? -1 : $data['vin']);
+        $this->setDeleted(false);
+    }
+
     public function getId(): ?int
     {
         return $this->id;
