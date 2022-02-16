@@ -52,6 +52,32 @@ class VehicleRepository extends ServiceEntityRepository
             $filtersAndSorts['filter']['deleted'] = false;
         }
 
+        if(isset($filtersAndSorts['filter']['date_added'])){
+            $filter = $filtersAndSorts['filter']['date_added'];
+            if(gettype($filter) !== "string"){
+                if(isset($filter['min'])){
+                    $date = $filter['min'];                    
+                    $filter['min'] = \strlen($date) > 10 ? $date : $date . " 00:00:00";
+                }
+                if(isset($filter['max'])){
+                    $date = $filter['max'];                    
+                    $filter['max'] = \strlen($date) > 10 ? $date : $date . " 23:59:59";
+                }
+                if(!isset($filter['min']) && !isset($filter['max'])){
+                    unset($filtersAndSorts['filter']['date_added']);
+                }
+            }
+            else{
+                $date = $filter;
+                $filter = 
+                [
+                    'min' => \substr($date, 0, 10) . " 00:00:00",
+                    'max' => \substr($date, 0, 10) . " 23:59:59"
+                ];
+                $filtersAndSorts['filter']['date_added'] = $filter;
+            }
+        };
+
         $columnNames = [
             'type',
             'msrp',
