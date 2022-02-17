@@ -1,5 +1,5 @@
 # iServiceAuto Case Study
-On this file you will be able to find the instructions as to how to setup the application.  
+On this file you will be able to find the instructions to setup the application.  
 
 Minimum Requirements: 
 
@@ -41,7 +41,7 @@ Please refer to the following sites on how to install each one of the tools ment
           > loading App\DataFixtures\AppFixtures
        vagrant@iserviceautolocal:~/code$
 
-You are all set! You can start testing the API sending the requests to http://127.0.0.1:8000
+You are all set! You can start testing the API sending requests to http://127.0.0.1:8000
 
 You can find the API documentation at https://app.swaggerhub.com/apis/jagarcell/iServiceAutoAPI/0.1
 
