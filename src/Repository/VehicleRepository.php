@@ -38,7 +38,7 @@ class VehicleRepository extends ServiceEntityRepository
         if($validation['status'] == 'ok'){
             $this->manager->persist($vehicle);
             $this->manager->flush();
-            return ['status' => 'ok', 'message' => 'VEHICLE CREATED. I HOPE I CAN BUY ONE FOR ME SOON!'];
+            return ['status' => 'ok', 'vehicle' => $vehicle->jsonResponse(), 'message' => 'VEHICLE CREATED. I HOPE I CAN BUY ONE FOR ME SOON!'];
         }
         else{
             return ['status' => 'error', 'message' => $validation['errorLog']];
@@ -118,7 +118,7 @@ class VehicleRepository extends ServiceEntityRepository
                 'itemsPerPage' => $result['itemsPerPage'], 
                 'itemsInPage' => $result['itemsInPage'],
                 'prevPage' => $result['prevPage'],
-                'page' => $result['page'],
+                'currentPage' => $result['page'],
                 'nextPage' => $result['nextPage'],
                 'total pages' => $result['totalPages']
             ];
@@ -134,27 +134,33 @@ class VehicleRepository extends ServiceEntityRepository
 
     }
 
-    public function updateVehicle($id, $data) : Vehicle
+    public function updateVehicle($id, $data, $validator)
     {
-        $vehicle = $this->vehicleRepository->findOneBy(['id' => $id, 'deleted' => false]);
+        $vehicle = $this->findOneBy(['id' => $id, 'deleted' => false]);
+
         if($vehicle === null){
             $vehicle = [];
         }
         else{
-            $data = \json_decode($request->getContent(), true);
+            !isset($data['date_added']) ? : $vehicle->setDateAdded(new \DateTime($data['date_added']));
+            !isset($data['type']) ? : $vehicle->setType($data['type']);
+            !isset($data['msrp']) ? $vehicle->setMsrp(floatval($vehicle->getMsrp())) : $vehicle->setMsrp($data['msrp']);
+            !isset($data['year']) ? : $vehicle->setYear($data['year']);
+            !isset($data['make']) ? : $vehicle->setMake($data['make']);
+            !isset($data['model']) ? : $vehicle->setModel($data['model']);
+            !isset($data['miles']) ? : $vehicle->setMiles($data['miles']);
+            !isset($data['vin']) ? : $vehicle->setVin($data['vin']);
 
-            isset($data['date_added']) ? : $vehicle->setDateAdded($data['date_added']);
-            isset($data['type']) ? : $vehicle->setType($data['type']);
-            isset($data['msrp']) ? : $vehicle->setMsrp($data['msrp']);
-            isset($data['year']) ? : $vehicle->setYear($data['year']);
-            isset($data['make']) ? : $vehicle->setMake($data['make']);
-            isset($data['model']) ? : $vehicle->setModel($data['model']);
-            isset($data['miles']) ? : $vehicle->setMiles($data['miles']);
-            isset($data['vin']) ? : $vehicle->setVin($data['vin']);
+            $validation = (new ParametersValidation())->validate($vehicle, $validator);
 
-            $this->manager->persist($vehicle);
-            $this->manager->flush();
-            $vehicle = $vehicle->jsonResponse();
+            if($validation['status'] == 'ok'){
+                $this->manager->persist($vehicle);
+                $this->manager->flush();
+                $vehicle = $vehicle->jsonResponse();
+            }
+            else{
+                return ['status' => 'error', 'message' => $validation['errorLog']];
+            }
         }
         return ['status' => 'ok', 'vehicle' => $vehicle];
     }
@@ -192,7 +198,7 @@ class VehicleRepository extends ServiceEntityRepository
     {
         return [
             'id' => $vehicle['id'],
-            'dateAdded' => $vehicle['date_added'],
+            'date_added' => $vehicle['date_added'],
             'type' => $vehicle['type'],
             'msrp' => $vehicle['msrp'],
             'year' => $vehicle['year'],

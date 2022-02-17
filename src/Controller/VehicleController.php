@@ -69,10 +69,10 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/vehicle/{id}', name: 'vehicleUpdate', methods: ['PATCH'])]
-    public function updateVehicle($id, Request $request)
+    public function updateVehicle($id, Request $request, ValidatorInterface $validator)
     {
         $data = \json_decode($request->getContent(), true);
-        $result = $this->vehicleRepository->updateVehicle($id, $data);
+        $result = $this->vehicleRepository->updateVehicle($id, $data, $validator);
 
         return new JsonResponse($result, Response::HTTP_OK);
     }
