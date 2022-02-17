@@ -43,7 +43,7 @@ Please refer to the following sites on how to install each one of the tools ment
 
 You are all set! You can start testing the API sending requests to http://127.0.0.1:8000
 
-You can find the API documentation at https://app.swaggerhub.com/apis/jagarcell/iServiceAutoAPI/0.1
+You can find the API documentation at https://app.swaggerhub.com/apis/jagarcell/iServiceAutoAPI/1.0
 
 Known (possible) issues:
 In some enviroments, when the Virtual Machine booting script performed by Vagrant finishes, you may notice an slow ssh login and API requests failures. 
