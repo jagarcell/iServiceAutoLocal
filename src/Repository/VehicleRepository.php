@@ -92,7 +92,7 @@ class VehicleRepository extends ServiceEntityRepository
     
         $sqlQueryBuilder = new SqlQueryBuilder('vehicle', $filtersAndSorts, $columnNames);
 
-        $sql = $sqlQueryBuilder->buildSelectString();
+        $sql = $sqlQueryBuilder->getSelectStatement();
 
         $statement = $connection->prepare($sql);
         $resultSet = $statement->executeQuery();

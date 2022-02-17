@@ -15,13 +15,18 @@ class SqlQueryBuilder {
         $this->columnNames = $columnNames;
     }
 
-    public function buildSelectString()
+    public function getSelectStatement()
+    {
+        return $this->buildSelectString();
+    }
+
+    private function buildSelectString()
     {
         $sql = '
-            SELECT * FROM ' . $this->table . ' t';
-        $sql .= $this->filterSql($this->filtersAndSorts);
-        $sql .= $this->searchSql($this->filtersAndSorts, $this->columnNames);
-        $sql .= $this->sortSql($this->filtersAndSorts);
+            SELECT * FROM ' . $this->table . ' t' .
+            $this->filterSql($this->filtersAndSorts) .
+            $this->searchSql($this->filtersAndSorts, $this->columnNames) .
+            $this->sortSql($this->filtersAndSorts);
         
         return $sql;
     }
