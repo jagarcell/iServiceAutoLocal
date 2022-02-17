@@ -6,12 +6,12 @@ Minimum Requirements:
     • Vagrant 2.2.19 (Latest released version) 
     • VirtualBox 6.1.32 r149290 (Qt5.6.2)
     
-Please refer to the following sites on how to install each one of the techonologies mentioned above:
+Please refer to the following sites on how to install each one of the tools mentioned above:
 
     • Vagrant: https://www.vagrantup.com/downloads.html
     • VirtualBox: https://www.virtualbox.org/wiki/Downloads
 
-    1. Navigate in your browser to this repository https://github.com/jagarcell/iServiceAutoLocal.
+    1. Navigate to this repository in your browser https://github.com/jagarcell/iServiceAutoLocal.
        And find the file named Assessment.rar in the repostory's root, click on it to open the download page.
     2. Download it into your local machine to any folder that you like to and
        once the file has been downloaded, navigate to that folder and extract the file Assessment.rar using the 'extract here' option.
@@ -40,6 +40,8 @@ Please refer to the following sites on how to install each one of the techonolog
        vagrant@iserviceautolocal:~/code$
 
 You are all set! You can start testing the API sending the requests to http://127.0.0.1:8000
+
+You can find the API documentation at https://app.swaggerhub.com/apis/jagarcell/iServiceAutoAPI/0.1
 
 Known (possible) issues:
 In some enviroments, when the Virtual Machine booting script performed by Vagrant finishes, you may notice an slow ssh login and API requests failures. This issue is due to the fact that even when the script has ended the job the machine is still starting services. You can check the progress of the machine by opening the 'Oracle VirtualBox Graphical User Interface' and selecting the Assessment_JG machine, the display emulator shows the machine activity. In any case it should not take more than a few minutes to fully boot up for the first time.    
