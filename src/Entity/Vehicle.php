@@ -107,7 +107,7 @@ class Vehicle
 
     public function setMsrp($msrp): self
     {
-        $this->msrp = $msrp;
+        $this->msrp = \floatval($msrp);
 
         return $this;
     }

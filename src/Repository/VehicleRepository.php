@@ -144,7 +144,7 @@ class VehicleRepository extends ServiceEntityRepository
         else{
             !isset($data['date_added']) ? : $vehicle->setDateAdded(new \DateTime($data['date_added']));
             !isset($data['type']) ? : $vehicle->setType($data['type']);
-            !isset($data['msrp']) ? $vehicle->setMsrp(floatval($vehicle->getMsrp())) : $vehicle->setMsrp($data['msrp']);
+            !isset($data['msrp']) ? $vehicle->setMsrp($vehicle->getMsrp()) : $vehicle->setMsrp($data['msrp']);
             !isset($data['year']) ? : $vehicle->setYear($data['year']);
             !isset($data['make']) ? : $vehicle->setMake($data['make']);
             !isset($data['model']) ? : $vehicle->setModel($data['model']);
