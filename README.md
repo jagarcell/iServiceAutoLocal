@@ -49,4 +49,11 @@ Known (possible) issues:
 In some enviroments, when the Virtual Machine booting script performed by Vagrant finishes, you may notice an slow ssh login and API requests failures. 
 This issue is due to the fact that even when the script has ended the job the machine is still starting services. You can check the progress of the machine
 by opening the 'Oracle VirtualBox Graphical User Interface' and selecting the Assessment_JG machine, the display emulator shows the machine activity. 
-In any case it should not take more than a few minutes to fully boot up for the first time.  
+In any case it should not take more than a few minutes to fully boot up for the first time.
+
+You ma also get a message like this when the script finishes:
+    The SSH command responded with a non-zero exit status. Vagrant
+    assumes that this means the command failed. The output for this command
+    should be in the log above. Please read the output to determine what
+    went wrong.
+That is due to the same causes exposed above, you can continue to'vagrant ssh'
