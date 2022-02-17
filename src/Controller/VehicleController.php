@@ -46,7 +46,8 @@ class VehicleController extends AbstractController
     #[Route('/vehicle_filtered_sorted', name: 'vehicleFilteredSorted', methods: ['GET'])]
     public function vehiclesFilteredAndSorted(Request $request) : JsonResponse
     {
-        $filtersAndSorts = \json_decode($request->getContent(), true);
+        $filtersAndSorts = $request->query->all();
+
         // This parameter 'app.vehicleType' from the enviroment determine the 
         // Type of vehicles to show (used or new)
         $filtersAndSorts['filter']['type'] = $this->getParameter('app.vehicleType');
@@ -55,7 +56,7 @@ class VehicleController extends AbstractController
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
-    #[Route('/vehicle/{id}', name: 'getVehicleById', methods: ['GET'])]
+    #[Route('/get_vehicle_by_id/{id}', name: 'getVehicleById', methods: ['GET'])]
     public function getVehicleById($id) : JsonResponse
     {
         # code...
@@ -68,7 +69,7 @@ class VehicleController extends AbstractController
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
-    #[Route('/vehicle/{id}', name: 'vehicleUpdate', methods: ['PATCH'])]
+    #[Route('/update_vehicle_by_id/{id}', name: 'vehicleUpdate', methods: ['PATCH'])]
     public function updateVehicle($id, Request $request, ValidatorInterface $validator)
     {
         $data = \json_decode($request->getContent(), true);
@@ -77,7 +78,7 @@ class VehicleController extends AbstractController
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
-    #[Route('/vehicle/{id}', name: 'deleteVehicle', methods: ['DELETE'])]
+    #[Route('/delete_vehicle_by_id/{id}', name: 'deleteVehicle', methods: ['DELETE'])]
     public function deleteVehicle($id) : JsonResponse
     {
         $result = $this->vehicleRepository->deleteVehicle($id);
