@@ -3,14 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
-use App\Utils\SqlQueryBuilder;
-use App\Utils\Paginate;
+use App\Service\SqlQueryBuilder;
+use App\Service\Paginate;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Utils\ParametersValidation;
+use App\Service\ParametersValidation;
 
 
 
@@ -44,17 +44,17 @@ class VehicleRepository extends ServiceEntityRepository
     ];
 
     private $manager;
-    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
+    private $parametersValidation;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager, ParametersValidation $parametersValidation)
     {
         parent::__construct($registry, Vehicle::class);
         $this->manager = $manager;
+        $this->parametersValidation = $parametersValidation;
     }
 
     public function createVehicle($data, $validator){
 
-        $parametersValidation = new ParametersValidation();
-
-        $missingParameters = $parametersValidation->checkRequiredParameters($data, $this->requiredColumns);
+        $missingParameters = $this->parametersValidation->checkRequiredParameters($data, $this->requiredColumns);
 
         if(count($missingParameters) > 0){
             return ['status' => 'error', 'message' => 'MISSING PARAMETERS!', 'parameters' => $missingParameters];
@@ -62,7 +62,7 @@ class VehicleRepository extends ServiceEntityRepository
 
         $vehicle = new Vehicle($data);
 
-        $validation = $parametersValidation->validate($vehicle, $validator);
+        $validation = $this->parametersValidation->validate($vehicle, $validator);
 
         if($validation['status'] == 'ok'){
             $this->manager->persist($vehicle);
@@ -170,7 +170,7 @@ class VehicleRepository extends ServiceEntityRepository
             !isset($data['miles']) ? : $vehicle->setMiles($data['miles']);
             !isset($data['vin']) ? : $vehicle->setVin($data['vin']);
 
-            $validation = (new ParametersValidation())->validate($vehicle, $validator);
+            $validation = $this->parametersValidation->validate($vehicle, $validator);
 
             if($validation['status'] == 'ok'){
                 $this->manager->persist($vehicle);

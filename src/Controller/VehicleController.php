@@ -10,9 +10,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use App\Repository\VehicleRepository;
-use App\Utils\ParametersValidation;
+use App\Service\ParametersValidation;
 use App\Entity\Vehicle;
-use App\Utils\SqlQueryBuilder;
+use App\Service\SqlQueryBuilder;
 
 class VehicleController extends AbstractController
 {
