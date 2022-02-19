@@ -22,6 +22,27 @@ use App\Utils\ParametersValidation;
  */
 class VehicleRepository extends ServiceEntityRepository
 {
+    
+    private $columnsForSearchText = [
+        'type',
+        'msrp',
+        'year',
+        'make',
+        'model',
+        'miles',
+        'vin'
+    ];
+
+    private $requiredColumns  = [
+        'type',
+        'msrp',
+        'year',
+        'make',
+        'model',
+        'miles',
+        'vin'
+    ];
+
     private $manager;
     public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
     {
@@ -31,9 +52,17 @@ class VehicleRepository extends ServiceEntityRepository
 
     public function createVehicle($data, $validator){
 
+        $parametersValidation = new ParametersValidation();
+
+        $missingParameters = $parametersValidation->checkRequiredParameters($data, $this->requiredColumns);
+
+        if(count($missingParameters) > 0){
+            return ['status' => 'error', 'message' => 'MISSING PARAMETERS!', 'parameters' => $missingParameters];
+        }
+
         $vehicle = new Vehicle($data);
 
-        $validation = (new ParametersValidation())->validate($vehicle, $validator);
+        $validation = $parametersValidation->validate($vehicle, $validator);
 
         if($validation['status'] == 'ok'){
             $this->manager->persist($vehicle);
@@ -57,11 +86,11 @@ class VehicleRepository extends ServiceEntityRepository
             if(gettype($filter) !== "string"){
                 if(isset($filter['min'])){
                     $date = $filter['min'];                    
-                    $filter['min'] = \strlen($date) > 10 ? $date : $date . " 00:00:00";
+                    $filter['min'] = strlen($date) > 10 ? $date : $date . " 00:00:00";
                 }
                 if(isset($filter['max'])){
                     $date = $filter['max'];                    
-                    $filter['max'] = \strlen($date) > 10 ? $date : $date . " 23:59:59";
+                    $filter['max'] = strlen($date) > 10 ? $date : $date . " 23:59:59";
                 }
                 if(!isset($filter['min']) && !isset($filter['max'])){
                     unset($filtersAndSorts['filter']['date_added']);
@@ -71,26 +100,16 @@ class VehicleRepository extends ServiceEntityRepository
                 $date = $filter;
                 $filter = 
                 [
-                    'min' => \substr($date, 0, 10) . " 00:00:00",
-                    'max' => \substr($date, 0, 10) . " 23:59:59"
+                    'min' => substr($date, 0, 10) . " 00:00:00",
+                    'max' => substr($date, 0, 10) . " 23:59:59"
                 ];
                 $filtersAndSorts['filter']['date_added'] = $filter;
             }
         };
 
-        $columnNames = [
-            'type',
-            'msrp',
-            'year',
-            'make',
-            'model',
-            'miles',
-            'vin'
-        ];
-
         $connection = $this->getEntityManager()->getConnection();
     
-        $sqlQueryBuilder = new SqlQueryBuilder('vehicle', $filtersAndSorts, $columnNames);
+        $sqlQueryBuilder = new SqlQueryBuilder('vehicle', $filtersAndSorts, $this->columnsForSearchText);
 
         $sql = $sqlQueryBuilder->getSelectStatement();
 

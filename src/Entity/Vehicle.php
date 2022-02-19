@@ -41,7 +41,6 @@ class Vehicle
     private $make;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Assert\NotBlank]
     #[Assert\Type('string', message:Vehicle::STRING_MESSAGE)]
     private $model;
 
@@ -60,14 +59,14 @@ class Vehicle
 
     public function __construct($data)
     {
-        $this->setDateAdded(new \DateTime());
-        $this->setType(!isset($data['type']) ?  : $data['type']);
-        $this->setMsrp(!isset($data['msrp']) ?  : $data['msrp']);
-        $this->setYear(!isset($data['year']) ?  : $data['year']);
-        $this->setMake(!isset($data['make']) ?  : $data['make']);
-        $this->setModel(!isset($data['model']) ?  : $data['model']);
-        $this->setMiles(!isset($data['miles']) ?  : $data['miles']);
-        $this->setVin(!isset($data['vin']) ? : $data['vin']);
+        $this->date_added = new \DateTime();
+        $this->type = $data['type'];
+        $this->msrp = floatval($data['msrp']);
+        $this->year = $data['year'];
+        $this->make = $data['make'];
+        $this->model = $data['model'];
+        $this->miles = $data['miles'];
+        $this->vin = $data['vin'];
         $this->setDeleted(false);
     }
 
@@ -107,8 +106,7 @@ class Vehicle
 
     public function setMsrp($msrp): self
     {
-        $this->msrp = \floatval($msrp);
-
+        $this->msrp = floatval($msrp);
         return $this;
     }
 

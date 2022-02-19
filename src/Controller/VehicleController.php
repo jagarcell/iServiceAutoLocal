@@ -35,7 +35,7 @@ class VehicleController extends AbstractController
     #[Route('/create_vehicle', name: 'createVehicle', methods: ['POST'])]
     public function create(Request $request, ValidatorInterface $validator) : JsonResponse
     {
-        $data = \json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
 
         $result = $this->vehicleRepository->createVehicle($data, $validator);
 

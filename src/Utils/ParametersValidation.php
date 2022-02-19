@@ -3,6 +3,17 @@ namespace App\Utils;
 
 class ParametersValidation
 {
+    public function checkRequiredParameters($data, $requiredColumns)
+    {
+        $missingParameters = [];
+        foreach ($requiredColumns as $key => $requiredColumn) {
+            if(!isset($data[$requiredColumn])){
+                array_push($missingParameters, $requiredColumn);
+            }
+        }
+        return $missingParameters;
+    }
+
     public function validate($entity, $validator){
         $errors = $validator->validate($entity);
         if(count($errors) > 0){
