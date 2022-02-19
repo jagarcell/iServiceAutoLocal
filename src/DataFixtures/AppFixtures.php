@@ -30,31 +30,32 @@ class AppFixtures extends Fixture
         $vin = 109186;
 
         for($i = 0; $i < 50; $i++){
-            $vehicle = new Vehicle([]);
-            $vehicle->setDateAdded(new \DateTime());
+            $data = [];
+            $data['date_added'] = new \DateTime();
             
-            $vehicle->setType($type[$typePointer]);
+            $data['type'] = $type[$typePointer];
             $typePointer = ($typePointer + 1) & 0b1;
 
-            $vehicle->setMsrp($faker->randomNumber(5));
+            $data['msrp'] = $faker->randomNumber(5);
             
-            $vehicle->setYear($year);
+            $data['year'] = $year;
             $year++;
             if($year == 2021){
                 $year = 2016;
             }
             
-            $vehicle->setMake($makes[$makeModelPointer]);
-            $vehicle->setModel($models[$makeModelPointer]);
+            $data['make'] = $makes[$makeModelPointer];
+            $data['model'] = $models[$makeModelPointer];
             $makeModelPointer = ($makeModelPointer + 1) & 0b11;
 
-            $vehicle->setMiles($faker->randomNumber(6));
+            $data['miles'] = $faker->randomNumber(6);
 
-            $vehicle->setVin($vinPrefix . $vin);
+            $data['vin'] = $vinPrefix . $vin;
             $vin++;
 
-            $vehicle->setDeleted(false);
-            $manager->persist($vehicle);
+            $data['deleted'] = false;
+
+            $manager->persist(new Vehicle($data));
         }
 
         $manager->flush();
