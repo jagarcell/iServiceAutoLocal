@@ -21,17 +21,17 @@ class VehicleUpdates{
     ];
 
     private $vehicleRepository;
-    private $manager;
+    private $entityManager;
     private $validator;
     private $parametersValidation;
     public function __construct(
         VehicleRepository $vehicleRepository,
-        EntityManagerInterface $manager, 
+        EntityManagerInterface $entityManager, 
         ValidatorInterface $validator, 
         ParametersValidation $parametersValidation)
     {
         $this->vehicleRepository = $vehicleRepository;
-        $this->manager = $manager;
+        $this->manager = $entityManager;
         $this->validator = $validator;
         $this->parametersValidation = $parametersValidation;
     }
