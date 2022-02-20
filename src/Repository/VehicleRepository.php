@@ -95,9 +95,9 @@ class VehicleRepository extends ServiceEntityRepository
             $itemsPerPage = $filtersAndSorts['itemsPerPage'];
             $page = $filtersAndSorts['page'];
 
-            $paginate = new Paginate($itemsPerPage, $vehicles, $this);
+            $paginate = new Paginate($itemsPerPage, $vehicles, $this, "getVehicleData");
 
-            $result = $paginate->fetchPage($page, "getVehicleData");
+            $result = $paginate->fetchPage($page);
 
             return [
                 'status' => 'ok', 
