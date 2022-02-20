@@ -42,7 +42,7 @@ class Paginate{
 
         $i = 0;
         for($i = ($page - 1) * $this->itemsPerPage; ($i < $page * $this->itemsPerPage && $i < count($this->dataSet)); $i++){
-            $data[] = \call_user_func_array(array($this->callingInstance, $getDataSet), array($this->dataSet[$i]));
+            $data[] = call_user_func_array(array($this->callingInstance, $getDataSet), array($this->dataSet[$i]));
         }
         $itemsInPage = $i - ($page - 1) * $this->itemsPerPage;
 

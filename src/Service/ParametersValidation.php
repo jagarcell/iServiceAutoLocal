@@ -1,8 +1,14 @@
 <?php
 namespace App\Service;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ParametersValidation
 {
+    private $validator;
+    public function __construct(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
     public function checkRequiredParameters($data, $requiredColumns)
     {
         $missingParameters = [];
@@ -14,8 +20,8 @@ class ParametersValidation
         return $missingParameters;
     }
 
-    public function validate($entity, $validator){
-        $errors = $validator->validate($entity);
+    public function validate($entity){
+        $errors = $this->validator->validate($entity);
         if(count($errors) > 0){
             $errorLog = (string) $errors;
             return (['status' => 'error', 'errorLog' => $errorLog]);
