@@ -3,14 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Vehicle;
-use App\Utils\SqlQueryBuilder;
-use App\Utils\Paginate;
+use App\Service\SqlQueryBuilder;
+use App\Service\Paginate;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Utils\ParametersValidation;
+use App\Service\ParametersValidation;
 
 
 
@@ -22,7 +22,7 @@ use App\Utils\ParametersValidation;
  */
 class VehicleRepository extends ServiceEntityRepository
 {
-    
+   
     private $columnsForSearchText = [
         'type',
         'msrp',
@@ -33,45 +33,13 @@ class VehicleRepository extends ServiceEntityRepository
         'vin'
     ];
 
-    private $requiredColumns  = [
-        'type',
-        'msrp',
-        'year',
-        'make',
-        'model',
-        'miles',
-        'vin'
-    ];
-
     private $manager;
-    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager)
+    private $parametersValidation;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $manager, ParametersValidation $parametersValidation)
     {
         parent::__construct($registry, Vehicle::class);
         $this->manager = $manager;
-    }
-
-    public function createVehicle($data, $validator){
-
-        $parametersValidation = new ParametersValidation();
-
-        $missingParameters = $parametersValidation->checkRequiredParameters($data, $this->requiredColumns);
-
-        if(count($missingParameters) > 0){
-            return ['status' => 'error', 'message' => 'MISSING PARAMETERS!', 'parameters' => $missingParameters];
-        }
-
-        $vehicle = new Vehicle($data);
-
-        $validation = $parametersValidation->validate($vehicle, $validator);
-
-        if($validation['status'] == 'ok'){
-            $this->manager->persist($vehicle);
-            $this->manager->flush();
-            return ['status' => 'ok', 'vehicle' => $vehicle->jsonResponse(), 'message' => 'VEHICLE CREATED. I HOPE I CAN BUY ONE FOR ME SOON!'];
-        }
-        else{
-            return ['status' => 'error', 'message' => $validation['errorLog']];
-        }
+        $this->parametersValidation = $parametersValidation;
     }
 
     public function filterAndSortVehicles($filtersAndSorts)
@@ -127,9 +95,9 @@ class VehicleRepository extends ServiceEntityRepository
             $itemsPerPage = $filtersAndSorts['itemsPerPage'];
             $page = $filtersAndSorts['page'];
 
-            $paginate = new Paginate($itemsPerPage, $vehicles, $this);
+            $paginate = new Paginate($itemsPerPage, $vehicles, $this, "getVehicleData");
 
-            $result = $paginate->fetchPage($page, "getVehicleData");
+            $result = $paginate->fetchPage($page);
 
             return [
                 'status' => 'ok', 
@@ -151,37 +119,6 @@ class VehicleRepository extends ServiceEntityRepository
             return ['status' => 'ok', 'vehicles' => $data];
         }
 
-    }
-
-    public function updateVehicle($id, $data, $validator)
-    {
-        $vehicle = $this->findOneBy(['id' => $id, 'deleted' => false]);
-
-        if($vehicle === null){
-            $vehicle = [];
-        }
-        else{
-            !isset($data['date_added']) ? : $vehicle->setDateAdded(new \DateTime($data['date_added']));
-            !isset($data['type']) ? : $vehicle->setType($data['type']);
-            !isset($data['msrp']) ? $vehicle->setMsrp($vehicle->getMsrp()) : $vehicle->setMsrp($data['msrp']);
-            !isset($data['year']) ? : $vehicle->setYear($data['year']);
-            !isset($data['make']) ? : $vehicle->setMake($data['make']);
-            !isset($data['model']) ? : $vehicle->setModel($data['model']);
-            !isset($data['miles']) ? : $vehicle->setMiles($data['miles']);
-            !isset($data['vin']) ? : $vehicle->setVin($data['vin']);
-
-            $validation = (new ParametersValidation())->validate($vehicle, $validator);
-
-            if($validation['status'] == 'ok'){
-                $this->manager->persist($vehicle);
-                $this->manager->flush();
-                $vehicle = $vehicle->jsonResponse();
-            }
-            else{
-                return ['status' => 'error', 'message' => $validation['errorLog']];
-            }
-        }
-        return ['status' => 'ok', 'vehicle' => $vehicle];
     }
 
     public function getVehicleById($id)

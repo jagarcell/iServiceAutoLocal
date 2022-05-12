@@ -7,20 +7,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use App\Repository\VehicleRepository;
-use App\Utils\ParametersValidation;
+use App\Service\ParametersValidation;
 use App\Entity\Vehicle;
-use App\Utils\SqlQueryBuilder;
+use App\Service\SqlQueryBuilder;
+use App\Service\VehicleUpdates;
 
 class VehicleController extends AbstractController
 {
     private $vehicleRepository;
+    private $vehicleUpdates;
 
-    public function __construct(VehicleRepository $vehicleRepository)
+    public function __construct(VehicleRepository $vehicleRepository, VehicleUpdates $vehicleUpdates)
     {
         $this->vehicleRepository = $vehicleRepository;
+        $this->vehicleUpdates = $vehicleUpdates;
     }
 
     #[Route('/vehicles', name: 'vehicles')]
@@ -33,11 +35,11 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/create_vehicle', name: 'createVehicle', methods: ['POST'])]
-    public function create(Request $request, ValidatorInterface $validator) : JsonResponse
+    public function create(Request $request) : JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        $result = $this->vehicleRepository->createVehicle($data, $validator);
+        $result = $this->vehicleUpdates->createVehicle($data);
 
         return new JsonResponse($result, Response:: HTTP_CREATED);
 
@@ -70,10 +72,10 @@ class VehicleController extends AbstractController
     }
 
     #[Route('/update_vehicle_by_id/{id}', name: 'vehicleUpdate', methods: ['PATCH'])]
-    public function updateVehicle($id, Request $request, ValidatorInterface $validator)
+    public function updateVehicle($id, Request $request) :JsonResponse
     {
         $data = \json_decode($request->getContent(), true);
-        $result = $this->vehicleRepository->updateVehicle($id, $data, $validator);
+        $result = $this->vehicleUpdates->updateVehicle($id, $data);
 
         return new JsonResponse($result, Response::HTTP_OK);
     }

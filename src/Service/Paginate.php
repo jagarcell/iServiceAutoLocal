@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Utils;
+namespace App\Service;
 
 class Paginate{
 
     private $itemsPerPage;
     private $callingInstance;
     private $dataSet;
+    private $getEntityDataFunction;
 
-    public function __construct($itemsPerPage, $dataSet, $callingInstance)
+    public function __construct($itemsPerPage, $dataSet, $callingInstance, $getEntityDataFunction)
     {
         $this->itemsPerPage = $itemsPerPage;
         $this->dataSet = $dataSet;
         $this->callingInstance = $callingInstance;
+        $this->getEntityDataFunction = $getEntityDataFunction;;
     }
 
     /**
@@ -28,7 +30,7 @@ class Paginate{
      *       'totalPages' => $totalPages
      * 
      */
-    public function fetchPage($page, $getDataSet)
+    public function fetchPage($page)
     {
         $totalPages = ceil(count($this->dataSet) / $this->itemsPerPage);
         if($page > $totalPages){
@@ -42,7 +44,7 @@ class Paginate{
 
         $i = 0;
         for($i = ($page - 1) * $this->itemsPerPage; ($i < $page * $this->itemsPerPage && $i < count($this->dataSet)); $i++){
-            $data[] = \call_user_func_array(array($this->callingInstance, $getDataSet), array($this->dataSet[$i]));
+            $data[] = call_user_func_array(array($this->callingInstance, $this->getEntityDataFunction), array($this->dataSet[$i]));
         }
         $itemsInPage = $i - ($page - 1) * $this->itemsPerPage;
 
